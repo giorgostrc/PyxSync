@@ -1,9 +1,8 @@
 import os
 from enum import Enum
 
+import exifread
 import psutil
-
-# import exifread
 
 
 def detect_storage():
@@ -71,10 +70,17 @@ def find_images(selected_device):
     return image_files
 
 
-def get_camera_model(image_paths):
-    # extensions = RAWImageExtensions.to_list()
-    # image_paths = [path for path in image_paths if os.path.splitext(path) in extensions]
-    pass
+def get_camera_model(filepath: str) -> str:
+    f = open(filepath, "rb")
+    tags = exifread.process_file(f)
+    make = tags.get("Image Make")
+    make = make.values.split(" ")[0]
+    model = tags.get("Image Model")
+    model = model.values
+    if make in model:
+        return model
+    model = model.replace(make, "").strip(" ")
+    return f"{make} {model}"
 
 
 def main():
