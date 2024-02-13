@@ -5,6 +5,22 @@ import exifread
 import psutil
 
 
+class ExtensionsEnum(Enum):
+    @classmethod
+    def to_list(cls):
+        return list(map(lambda c: c.value, cls))
+
+
+class ImageExtensions(ExtensionsEnum):
+    JPG = ".JPG"
+    JPEG = ".JPEG"
+
+
+class RAWImageExtensions(ExtensionsEnum):
+    ARW = ".ARW"
+    NEF = ".NEF"
+
+
 def detect_storage():
     partitions = psutil.disk_partitions(all=True)
     external_storage_devices = [
@@ -31,24 +47,6 @@ def select_device(external_storage_devices):
             return selected_device
     except Exception as e:
         print(f"Invalid input: {e}")
-
-
-class ImageExtensions(Enum):
-    JPG = ".JPG"
-    JPEG = ".JPEG"
-
-    @classmethod
-    def to_list(cls):
-        return list(map(lambda c: c.value, cls))
-
-
-class RAWImageExtensions(Enum):
-    ARW = ".ARW"
-    NEF = ".NEF"
-
-    @classmethod
-    def to_list(cls):
-        return list(map(lambda c: c.value, cls))
 
 
 def find_images(selected_device):
@@ -88,7 +86,7 @@ def main():
     selected_device = select_device(devices)
     if selected_device:
         image_files = find_images(selected_device)
-        get_camera_model(image_files)
+        get_camera_model(image_files[0])
 
 
 if __name__ == "__main__":
