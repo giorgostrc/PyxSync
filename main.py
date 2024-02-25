@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+from typing import List, Optional
 
 import exifread
 import psutil
@@ -21,17 +22,17 @@ class RAWImageExtensions(ExtensionsEnum):
     NEF = ".NEF"
 
 
-def detect_storage():
+def detect_removable_storage() -> List[str]:
     partitions = psutil.disk_partitions(all=True)
     external_storage_devices = [
         partition.device
         for partition in partitions
-        if any(option in partition.opts for option in ["removable", "external"])
+        if any(option in partition.opts for option in ["removable", "external"]) and "rw" in partition.opts
     ]
     return external_storage_devices
 
 
-def select_device(external_storage_devices):
+def select_device(external_storage_devices: List[str]) -> Optional[str]:
     if not external_storage_devices:
         print("No devices were found! Please connect an external storage!")
 
@@ -48,8 +49,10 @@ def select_device(external_storage_devices):
     except Exception as e:
         print(f"Invalid input: {e}")
 
+    return None
 
-def find_images(selected_device):
+
+def find_images(selected_device: str) -> Optional[List[str]]:
     all_image_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list()
     image_files = []
 
@@ -78,15 +81,16 @@ def get_camera_model(filepath: str) -> str:
     if make in model:
         return model
     model = model.replace(make, "").strip(" ")
-    return f"{make} {model}"
+    result = f"{make} {model}"
+    print(result)
+    return result
 
 
 def main():
-    devices = detect_storage()
+    devices = detect_removable_storage()
     selected_device = select_device(devices)
-    if selected_device:
-        image_files = find_images(selected_device)
-        get_camera_model(image_files[0])
+    image_files = find_images(selected_device)
+    get_camera_model(image_files[0])
 
 
 if __name__ == "__main__":
