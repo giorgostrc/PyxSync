@@ -6,6 +6,7 @@ from typing import List, Optional
 
 import exifread
 import psutil
+from tqdm import tqdm
 
 
 class ExtensionsEnum(Enum):
@@ -114,8 +115,7 @@ def get_photo_date_range(filepaths: List[str]) -> str:
 
 def copy_files(filepaths: List[str], target_dir: str) -> None:
     os.makedirs(target_dir, exist_ok=False)
-    # TODO: TQDM Progress update
-    for filepath in filepaths:
+    for i, filepath in tqdm(enumerate(filepaths), desc="Copying over files ... ", total=len(filepaths)):
         if os.path.isfile(filepath):
             filename = os.path.basename(filepath)
             destination = os.path.join(target_dir, filename)

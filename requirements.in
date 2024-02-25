@@ -1,3 +1,4 @@
 psutil
 exifread
 pytest
+tqdm
