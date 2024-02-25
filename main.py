@@ -25,6 +25,10 @@ class RAWImageExtensions(ExtensionsEnum):
     NEF = ".NEF"
 
 
+class VideoExtensions(ExtensionsEnum):
+    MP4 = ".MP4"
+
+
 def detect_removable_storage() -> List[str]:
     partitions = psutil.disk_partitions(all=True)
     external_storage_devices = [
@@ -63,23 +67,24 @@ def select_device(storage_devices: List[str]) -> Optional[str]:
     return None
 
 
-def find_images(selected_device: str) -> Optional[List[str]]:
-    all_image_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list()
-    image_files = []
+def find_images_videos(selected_device: str) -> Optional[List[str]]:
+    # TODO: Add user option from_dcim_only: bool for image files
+    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list() + VideoExtensions.to_list()
+    detected_files = []
 
     print("Searching for files ...")
     for root, _, files in os.walk(selected_device):
         for file in files:
             _, extension = os.path.splitext(file)
-            if extension.upper() in all_image_extensions:
-                image_files.append(os.path.join(root, file))
+            if extension.upper() in all_extensions:
+                detected_files.append(os.path.join(root, file))
 
-    if not image_files:
-        print("No image files were found!")
+    if not detected_files:
+        print("No files were found!")
         return []
 
-    print(f"Found {len(image_files)} image files.")
-    return image_files
+    print(f"Found {len(detected_files)} files.")
+    return detected_files
 
 
 def get_camera_model(filepath: str) -> str:
@@ -127,7 +132,7 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
 def main():
     removable_storage_devices = detect_removable_storage()
     source_device = select_device(removable_storage_devices)
-    source_files = find_images(source_device)
+    source_files = find_images_videos(source_device)
     camera_model = get_camera_model(source_files[0])
     date_range = get_photo_date_range(source_files)
     local_storage_devices = detect_local_storage()
