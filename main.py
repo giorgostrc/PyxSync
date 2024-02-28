@@ -5,8 +5,9 @@ from enum import Enum
 from typing import List, Optional
 
 import exifread
-import psutil
 from tqdm import tqdm
+
+from storage_manager import StorageManager
 
 
 class ExtensionsEnum(Enum):
@@ -29,47 +30,9 @@ class VideoExtensions(ExtensionsEnum):
     MP4 = ".MP4"
 
 
-def detect_removable_storage() -> List[str]:
-    partitions = psutil.disk_partitions(all=True)
-    external_storage_devices = [
-        partition.device
-        for partition in partitions
-        if any(option in partition.opts for option in ["removable", "external"]) and "rw" in partition.opts
-    ]
-    return external_storage_devices
-
-
-def detect_local_storage() -> List[str]:
-    partitions = psutil.disk_partitions(all=True)
-    local_storage_devices = [
-        partition.device for partition in partitions if all(option in partition.opts for option in ["fixed", "rw"])
-    ]
-    return local_storage_devices
-
-
-def select_device(storage_devices: List[str]) -> Optional[str]:
-    if not storage_devices:
-        print("No devices were found! Please connect an external storage!")
-
-    print("External Devices:")
-    for i, device in enumerate(storage_devices):
-        print(f"{i}: {device}")
-
-    try:
-        selected_idx = int(input("Select a device id: "))
-        if selected_idx <= len(storage_devices):
-            selected_device = storage_devices[selected_idx]
-            print(f"Selected device {selected_idx}: {selected_device}")
-            return selected_device
-    except Exception as e:
-        print(f"Invalid input: {e}")
-
-    return None
-
-
 def find_images_videos(selected_device: str) -> Optional[List[str]]:
     # TODO: Add user option from_dcim_only: bool for image files
-    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list() + VideoExtensions.to_list()
+    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list()
     detected_files = []
 
     print("Searching for files ...")
@@ -130,14 +93,13 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
 
 
 def main():
-    removable_storage_devices = detect_removable_storage()
-    source_device = select_device(removable_storage_devices)
-    source_files = find_images_videos(source_device)
+    storage_manager = StorageManager()
+    storage_manager.select_source_storage()
+    source_files = find_images_videos(storage_manager.source_storage)
     camera_model = get_camera_model(source_files[0])
     date_range = get_photo_date_range(source_files)
-    local_storage_devices = detect_local_storage()
-    target_device = select_device(local_storage_devices)
-    target_dir = os.path.join(target_device, camera_model, date_range)
+    storage_manager.select_target_storage()
+    target_dir = os.path.join(storage_manager.target_storage, camera_model, date_range)
     print(f"Destination path: {target_dir}")
     copy_files(source_files, target_dir)
 
