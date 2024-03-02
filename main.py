@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from datetime import datetime
@@ -8,6 +9,9 @@ import exifread
 from tqdm import tqdm
 
 from storage_manager import StorageManager
+from user_interface import UserInterface
+
+logger = logging.getLogger()
 
 
 class ExtensionsEnum(Enum):
@@ -31,11 +35,10 @@ class VideoExtensions(ExtensionsEnum):
 
 
 def find_images_videos(selected_device: str) -> Optional[List[str]]:
-    # TODO: Add user option from_dcim_only: bool for image files
-    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list()
+    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list() + VideoExtensions.to_list()
     detected_files = []
 
-    print("Searching for files ...")
+    logger.info("Searching for files ...")
     for root, _, files in os.walk(selected_device):
         for file in files:
             _, extension = os.path.splitext(file)
@@ -43,10 +46,10 @@ def find_images_videos(selected_device: str) -> Optional[List[str]]:
                 detected_files.append(os.path.join(root, file))
 
     if not detected_files:
-        print("No files were found!")
+        logger.info("No files were found!")
         return []
 
-    print(f"Found {len(detected_files)} files.")
+    logger.info(f"Found {len(detected_files)} files.")
     return detected_files
 
 
@@ -89,18 +92,22 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
             destination = os.path.join(target_dir, filename)
             shutil.copy2(filepath, destination)
         else:
-            print(f"Warning: '{filepath}' is not a valid file path.")
+            logger.warning(f"{filepath} is not a valid file path.")
 
 
 def main():
+    ui = UserInterface()
+    ui.display_message("Welcome to PyxSync!")
     storage_manager = StorageManager()
-    storage_manager.select_source_storage()
+    ui.display_message("Please select the source directory ...")
+    storage_manager.source_storage = ui.choose_directory()
     source_files = find_images_videos(storage_manager.source_storage)
     camera_model = get_camera_model(source_files[0])
     date_range = get_photo_date_range(source_files)
-    storage_manager.select_target_storage()
+    ui.display_message("Please select the target directory ...")
+    storage_manager.target_storage = ui.choose_directory()
     target_dir = os.path.join(storage_manager.target_storage, camera_model, date_range)
-    print(f"Destination path: {target_dir}")
+    logger.info(f"Destination path: {target_dir}")
     copy_files(source_files, target_dir)
 
 
