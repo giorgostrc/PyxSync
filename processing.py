@@ -28,7 +28,7 @@ def find_files(selected_device: str, mode: FileHandlingModes) -> Optional[List[s
     target_extensions = mode_target_files[mode]
     detected_files = []
 
-    logger.info("Searching for files ...")
+    logger.info(f"Searching for {target_extensions} files ...")
     for root, _, files in os.walk(selected_device):
         for file in files:
             _, extension = os.path.splitext(file)
@@ -36,10 +36,10 @@ def find_files(selected_device: str, mode: FileHandlingModes) -> Optional[List[s
                 detected_files.append(os.path.join(root, file))
 
     if not detected_files:
-        logger.info("No files were found!")
+        logger.info(f"No {target_extensions} files were found!")
         return []
 
-    logger.info(f"Found {len(detected_files)} files.")
+    logger.info(f"Found {len(detected_files)} {target_extensions} files.")
     return detected_files
 
 
