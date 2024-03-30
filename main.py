@@ -2,36 +2,16 @@ import logging
 import os
 import shutil
 from datetime import datetime
-from enum import Enum
 from typing import List, Optional
 
 import exifread
 from tqdm import tqdm
 
+from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
 from storage_manager import StorageManager
 from user_interface import UserInterface
 
 logger = logging.getLogger()
-
-
-class ExtensionsEnum(Enum):
-    @classmethod
-    def to_list(cls):
-        return list(map(lambda c: c.value, cls))
-
-
-class ImageExtensions(ExtensionsEnum):
-    JPG = ".JPG"
-    JPEG = ".JPEG"
-
-
-class RAWImageExtensions(ExtensionsEnum):
-    ARW = ".ARW"
-    NEF = ".NEF"
-
-
-class VideoExtensions(ExtensionsEnum):
-    MP4 = ".MP4"
 
 
 def find_images_videos(selected_device: str) -> Optional[List[str]]:
