@@ -1,7 +1,7 @@
 import logging
 import os
 
-from processing import copy_files, find_images_videos, get_camera_model, get_photo_date_range
+from processing import FileHandlingModes, copy_files, find_files, get_camera_model, get_photo_date_range
 from storage_manager import StorageManager
 from user_interface import UserInterface
 
@@ -14,7 +14,7 @@ def main():
     storage_manager = StorageManager()
     ui.display_message("Please select the source directory ...")
     storage_manager.source_storage = ui.choose_directory()
-    source_files = find_images_videos(storage_manager.source_storage)
+    source_files = find_files(storage_manager.source_storage, mode=FileHandlingModes.IMG)
     camera_model = get_camera_model(source_files[0])
     date_range = get_photo_date_range(source_files)
     ui.display_message("Please select the target directory ...")

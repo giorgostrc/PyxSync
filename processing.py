@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional
 
 import exifread
@@ -12,15 +13,28 @@ from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
 logger = logging.getLogger()
 
 
-def find_images_videos(selected_device: str) -> Optional[List[str]]:
-    all_extensions = ImageExtensions.to_list() + RAWImageExtensions.to_list() + VideoExtensions.to_list()
+class FileHandlingModes(Enum):
+    RAW = "RAW"
+    JPG = "JPG"
+    IMG = "IMG"
+    VID = "VID"
+
+
+def find_files(selected_device: str, mode: FileHandlingModes) -> Optional[List[str]]:
+    mode_target_files = {
+        FileHandlingModes.RAW: RAWImageExtensions.to_list(),
+        FileHandlingModes.JPG: ImageExtensions.to_list(),
+        FileHandlingModes.IMG: ImageExtensions.to_list() + RAWImageExtensions.to_list(),
+        FileHandlingModes.VID: VideoExtensions.to_list(),
+    }
+    target_extensions = mode_target_files[mode]
     detected_files = []
 
     logger.info("Searching for files ...")
     for root, _, files in os.walk(selected_device):
         for file in files:
             _, extension = os.path.splitext(file)
-            if extension.upper() in all_extensions:
+            if extension.upper() in target_extensions:
                 detected_files.append(os.path.join(root, file))
 
     if not detected_files:
