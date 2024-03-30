@@ -85,14 +85,24 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
             logger.warning(f"{filepath} is not a valid file path.")
 
 
-def process_files(source_storage: str, target_storage: str, mode: FileHandlingModes):
-    source_files = find_files(source_storage, mode)
-    if not source_files:
-        logger.info(f"No files with extensions  were found in: {source_storage}")
+def process_files(source_storage: str, target_storage: str):
+    raw_files = find_files(source_storage, FileHandlingModes.RAW)
+    if not raw_files:
+        logger.error(f"No RAW files were found in: {source_storage}")
         return
 
-    camera_model = get_camera_model(source_files[0])
-    date_range = get_photo_date_range(source_files)
+    camera_model = get_camera_model(raw_files[0])
+    date_range = get_photo_date_range(raw_files)
     target_dir = os.path.join(target_storage, camera_model, date_range)
     logger.info(f"Destination path: {target_dir}")
-    copy_files(source_files, target_dir)
+    copy_files(raw_files, target_dir)
+
+    jpg_files = find_files(source_storage, FileHandlingModes.JPG)
+    if jpg_files:
+        jpg_target_dir = os.path.join(target_dir, "JPG/")
+        copy_files(jpg_files, jpg_target_dir)
+
+    vid_files = find_files(source_storage, FileHandlingModes.VID)
+    if vid_files:
+        vid_target_dir = os.path.join(target_dir, "MOV/")
+        copy_files(vid_files, vid_target_dir)

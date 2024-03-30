@@ -1,4 +1,4 @@
-from processing import FileHandlingModes, process_files
+from processing import process_files
 from storage_manager import StorageManager
 from user_interface import UserInterface
 
@@ -12,7 +12,7 @@ def main():
     storage_manager.source_storage = ui.choose_directory()
     ui.display_message("Please select the target directory ...")
     storage_manager.target_storage = ui.choose_directory()
-    process_files(storage_manager.source_storage, storage_manager.target_storage, FileHandlingModes.RAW)
+    process_files(storage_manager.source_storage, storage_manager.target_storage)
 
 
 if __name__ == "__main__":
