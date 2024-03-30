@@ -1,4 +1,3 @@
-import logging
 import os
 import shutil
 from datetime import datetime
@@ -9,8 +8,7 @@ import exifread
 from tqdm import tqdm
 
 from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
-
-logger = logging.getLogger(__name__)
+from logger import logger
 
 
 class FileHandlingModes(Enum):

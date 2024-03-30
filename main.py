@@ -1,10 +1,6 @@
-import logging
-
 from processing import FileHandlingModes, process_files
 from storage_manager import StorageManager
 from user_interface import UserInterface
-
-logger = logging.getLogger(__name__)
 
 
 def main():
