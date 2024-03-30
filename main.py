@@ -13,6 +13,7 @@ def main():
     ui.display_message("Please select the target directory ...")
     storage_manager.target_storage = ui.choose_directory()
     process_files(storage_manager.source_storage, storage_manager.target_storage)
+    ui.display_message("Process completed!")
 
 
 if __name__ == "__main__":
