@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class FileHandlingModes(Enum):
@@ -85,3 +85,16 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
             shutil.copy2(filepath, destination)
         else:
             logger.warning(f"{filepath} is not a valid file path.")
+
+
+def process_files(source_storage: str, target_storage: str, mode: FileHandlingModes):
+    source_files = find_files(source_storage, mode)
+    if not source_files:
+        logger.info(f"No files with extensions  were found in: {source_storage}")
+        return
+
+    camera_model = get_camera_model(source_files[0])
+    date_range = get_photo_date_range(source_files)
+    target_dir = os.path.join(target_storage, camera_model, date_range)
+    logger.info(f"Destination path: {target_dir}")
+    copy_files(source_files, target_dir)

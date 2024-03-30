@@ -1,27 +1,22 @@
 import logging
-import os
 
-from processing import FileHandlingModes, copy_files, find_files, get_camera_model, get_photo_date_range
+from processing import FileHandlingModes, process_files
 from storage_manager import StorageManager
 from user_interface import UserInterface
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def main():
     ui = UserInterface()
     ui.display_message("Welcome to PyxSync!")
+
     storage_manager = StorageManager()
     ui.display_message("Please select the source directory ...")
     storage_manager.source_storage = ui.choose_directory()
-    source_files = find_files(storage_manager.source_storage, mode=FileHandlingModes.IMG)
-    camera_model = get_camera_model(source_files[0])
-    date_range = get_photo_date_range(source_files)
     ui.display_message("Please select the target directory ...")
     storage_manager.target_storage = ui.choose_directory()
-    target_dir = os.path.join(storage_manager.target_storage, camera_model, date_range)
-    logger.info(f"Destination path: {target_dir}")
-    copy_files(source_files, target_dir)
+    process_files(storage_manager.source_storage, storage_manager.target_storage, FileHandlingModes.RAW)
 
 
 if __name__ == "__main__":
