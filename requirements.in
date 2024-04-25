@@ -2,3 +2,4 @@ psutil
 exifread
 pytest
 tqdm
+customtkinter

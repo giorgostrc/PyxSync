@@ -8,12 +8,18 @@ colorama==0.4.6
     # via
     #   pytest
     #   tqdm
+customtkinter==5.2.2
+    # via -r .\requirements.in
+darkdetect==0.8.0
+    # via customtkinter
 exifread==3.0.0
     # via -r .\requirements.in
 iniconfig==2.0.0
     # via pytest
 packaging==23.2
-    # via pytest
+    # via
+    #   customtkinter
+    #   pytest
 pluggy==1.4.0
     # via pytest
 psutil==5.9.8
