@@ -3,6 +3,7 @@ from tkinter import END, filedialog
 
 import customtkinter as ctk
 
+from logger import UILogsHandler, logger
 from processing import process_files
 from storage_manager import StorageManager
 
@@ -12,9 +13,10 @@ class PyxSyncUI(ctk.CTk):
         super().__init__()
 
         self.title("PyxSync")
-        width, height = (500, 320)
+        width, height = (500, 400)
         self.geometry(f"{width}x{height}")
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(4, weight=1)
 
         self.title_textbox = TitleLabel(self, "Welcome to PyxSync", 24)
         self.title_textbox.grid(row=0, column=0, padx=(10, 10), pady=(10, 10))
@@ -28,11 +30,16 @@ class PyxSyncUI(ctk.CTk):
         self.transfer_files_btn = ctk.CTkButton(self, text="Start file transfer", command=self.run_process)
         self.transfer_files_btn.grid(row=3, column=0, padx=(10, 10), pady=(10, 10))
 
+        self.logs_display = DisplayLogsFrame(self, width)
+        self.logs_display.grid(row=4, column=0, padx=(10, 10), pady=(10, 10))
+
     def run_process(self):
+        self.transfer_files_btn.configure(state="disabled")
         storage_manager = StorageManager()
         storage_manager.source_storage = self.select_source_frame.path_entry.get()
         storage_manager.target_storage = self.select_target_frame.path_entry.get()
         process_files(storage_manager.source_storage, storage_manager.target_storage)
+        self.transfer_files_btn.configure(state="normal")
 
 
 class TitleLabel(ctk.CTkLabel):
@@ -61,3 +68,21 @@ class DirSelectionFrame(ctk.CTkFrame):
         selected_dir = filedialog.askdirectory()
         self.path_entry.delete(0, END)
         self.path_entry.insert(0, selected_dir)
+
+
+class DisplayLogsFrame(ctk.CTkFrame):
+    def __init__(self, master, width):
+        super().__init__(master)
+        self.title = "logs display"
+        self.grid_columnconfigure(0, weight=1)
+
+        self.logs_box = ctk.CTkTextbox(self, width=width, height=200, activate_scrollbars=False)
+        self.logs_box.grid(row=0, column=0, sticky="nsew")
+        self.logs_box.configure(state="disabled")
+
+        ctk_textbox_scrollbar = ctk.CTkScrollbar(self, command=self.logs_box.yview)
+        ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
+        self.logs_box.configure(yscrollcommand=ctk_textbox_scrollbar.set)
+
+        logs_handler = UILogsHandler(self.logs_box)
+        logger.addHandler(logs_handler)
