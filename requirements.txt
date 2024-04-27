@@ -20,6 +20,8 @@ packaging==23.2
     # via
     #   customtkinter
     #   pytest
+pillow==10.3.0
+    # via -r .\requirements.in
 pluggy==1.4.0
     # via pytest
 psutil==5.9.8

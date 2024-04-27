@@ -2,6 +2,7 @@ import math
 from tkinter import DISABLED, END, NORMAL, filedialog
 
 import customtkinter as ctk
+from PIL import Image
 
 from logger import UILogsHandler, logger
 from processing import process_files
@@ -48,19 +49,30 @@ class TitleLabel(ctk.CTkLabel):
         self.anchor = "center"
 
 
+class ButtonWithIcon(ctk.CTkButton):
+    def __init__(self, master, width, command, text, icon_path, icon_size):
+        icon = ctk.CTkImage(Image.open(icon_path), size=icon_size)
+        super().__init__(master, width=width, command=command, text=text, image=icon)
+
+
 class DirSelectionFrame(ctk.CTkFrame):
     def __init__(self, master, selector_type, width):
         super().__init__(master)
         self.title = f"{selector_type} selector"
         self.grid_columnconfigure(1, weight=1)
 
-        self.browse_button = ctk.CTkButton(
-            self, text="Browse ...", width=math.floor(0.2 * width), command=self.choose_directory
+        self.browse_button = ButtonWithIcon(
+            self,
+            math.floor(0.1 * width),
+            self.choose_directory,
+            "",
+            "icons/add_folder_icon.png",
+            (24, 24),
         )
         self.browse_button.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
         self.path_entry = ctk.CTkEntry(
-            self, placeholder_text=f"Select a path to file {selector_type} ...", width=math.floor(0.7 * width)
+            self, placeholder_text=f"Select a path to file {selector_type} ...", width=math.floor(0.8 * width)
         )
         self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5))
 

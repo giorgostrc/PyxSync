@@ -3,3 +3,4 @@ exifread
 pytest
 tqdm
 customtkinter
+pillow
