@@ -4,11 +4,13 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
+import customtkinter as ctk
 import exifread
 from tqdm import tqdm
 
 from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
 from logger import logger
+from progress import ProgressTracker
 from storage_manager import StorageManager
 
 
@@ -75,9 +77,11 @@ def get_photo_date_range(filepaths: List[str]) -> str:
     return f"{earliest_date} - {latest_date}"
 
 
-def copy_files(filepaths: List[str], target_dir: str) -> None:
+def copy_files(filepaths: List[str], target_dir: str, prog_tracker: ProgressTracker) -> None:
     os.makedirs(target_dir, exist_ok=False)
+    prog_tracker.add_total_steps(len(filepaths))
     for i, filepath in tqdm(enumerate(filepaths), desc="Copying over files ... ", total=len(filepaths)):
+        prog_tracker.report_progress(1)
         if os.path.isfile(filepath):
             filename = os.path.basename(filepath)
             destination = os.path.join(target_dir, filename)
@@ -86,7 +90,7 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
             logger.warning(f"{filepath} is not a valid file path.")
 
 
-def process_files(storage: StorageManager) -> None:
+def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> None:
     raw_files = find_files(storage.source, FileHandlingModes.RAW)
     if not raw_files:
         logger.error(f"No RAW files were found in: {storage.source}")
@@ -96,14 +100,25 @@ def process_files(storage: StorageManager) -> None:
     date_range = get_photo_date_range(raw_files)
     target_dir = os.path.join(storage.target, camera_model, date_range)
     logger.info(f"Destination path: {target_dir}")
-    copy_files(raw_files, target_dir)
+    copy_files(raw_files, target_dir, prog_tracker)
 
     jpg_files = find_files(storage.source, FileHandlingModes.JPG)
     if jpg_files:
         jpg_target_dir = os.path.join(target_dir, "JPG/")
-        copy_files(jpg_files, jpg_target_dir)
+        copy_files(jpg_files, jpg_target_dir, prog_tracker)
 
     vid_files = find_files(storage.source, FileHandlingModes.VID)
     if vid_files:
         vid_target_dir = os.path.join(target_dir, "MOV/")
-        copy_files(vid_files, vid_target_dir)
+        copy_files(vid_files, vid_target_dir, prog_tracker)
+
+    prog_tracker.progress_bar.set_success()
+
+
+def run_process(storage: StorageManager, prog_tracker: ProgressTracker, start_process_btn: ctk.CTkButton) -> None:
+    try:
+        process_files(storage, prog_tracker)
+    except Exception as e:
+        logger.error(f"Couldn't complete file transfer with error: {e}")
+    finally:
+        start_process_btn.configure(state=ctk.NORMAL)
