@@ -1,4 +1,5 @@
 import math
+import os
 from tkinter import DISABLED, END, NORMAL, filedialog
 
 import customtkinter as ctk
@@ -7,6 +8,8 @@ from PIL import Image
 from logger import UILogsHandler, logger
 from processing import process_files
 from storage_manager import StorageManager
+
+basedir = os.path.dirname(__file__)
 
 
 class PyxSyncUI(ctk.CTk):
@@ -54,6 +57,7 @@ class TitleLabel(ctk.CTkLabel):
 
 class ButtonWithIcon(ctk.CTkButton):
     def __init__(self, master, width, command, text, icon_path, icon_size):
+        icon_path = os.path.join(basedir, icon_path)
         icon = ctk.CTkImage(Image.open(icon_path), size=icon_size)
         super().__init__(master, width=width, command=command, text=text, image=icon)
 

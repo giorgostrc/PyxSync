@@ -29,6 +29,8 @@ Alternatively, you can run the app by following these steps:
 3. Pip install the required dependencies from `requirements.txt`.
 4. Run `python main.py`
 
+To build a one file executable run `pyinstaller --onefile --add-data "icons/*:icons" main.py`
+
 ### Adding a file format:
 
 By default, the app - and as a result its releases - support .NEF, .ARW, .JPG and .MP4 files.
