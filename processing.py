@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
 from logger import logger
+from storage_manager import StorageManager
 
 
 class FileHandlingModes(Enum):
@@ -85,24 +86,24 @@ def copy_files(filepaths: List[str], target_dir: str) -> None:
             logger.warning(f"{filepath} is not a valid file path.")
 
 
-def process_files(source_storage: str, target_storage: str):
-    raw_files = find_files(source_storage, FileHandlingModes.RAW)
+def process_files(storage: StorageManager) -> None:
+    raw_files = find_files(storage.source, FileHandlingModes.RAW)
     if not raw_files:
-        logger.error(f"No RAW files were found in: {source_storage}")
+        logger.error(f"No RAW files were found in: {storage.source}")
         return
 
     camera_model = get_camera_model(raw_files[0])
     date_range = get_photo_date_range(raw_files)
-    target_dir = os.path.join(target_storage, camera_model, date_range)
+    target_dir = os.path.join(storage.target, camera_model, date_range)
     logger.info(f"Destination path: {target_dir}")
     copy_files(raw_files, target_dir)
 
-    jpg_files = find_files(source_storage, FileHandlingModes.JPG)
+    jpg_files = find_files(storage.source, FileHandlingModes.JPG)
     if jpg_files:
         jpg_target_dir = os.path.join(target_dir, "JPG/")
         copy_files(jpg_files, jpg_target_dir)
 
-    vid_files = find_files(source_storage, FileHandlingModes.VID)
+    vid_files = find_files(storage.source, FileHandlingModes.VID)
     if vid_files:
         vid_target_dir = os.path.join(target_dir, "MOV/")
         copy_files(vid_files, vid_target_dir)

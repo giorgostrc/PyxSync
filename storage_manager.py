@@ -3,30 +3,30 @@ from typing import Optional
 
 
 class StorageManager:
-    def __init__(self, source_storage: Optional[str] = None, target_storage: Optional[str] = None):
-        self._source_storage = source_storage
-        self._target_storage = target_storage
+    def __init__(self, source: Optional[str] = None, target: Optional[str] = None):
+        self._source = source
+        self._target = target
 
     @property
-    def source_storage(self):
-        return self._source_storage
+    def source(self):
+        return self._source
 
-    @source_storage.setter
-    def source_storage(self, new_source):
+    @source.setter
+    def source(self, new_source):
         if not isinstance(new_source, str):
             raise TypeError(f"Provided path {new_source} must be a str")
         if not os.path.exists(new_source):
             raise ValueError(f"Provided path {new_source} does not exist")
-        self._source_storage = new_source
+        self._source = new_source
 
     @property
-    def target_storage(self):
-        return self._target_storage
+    def target(self):
+        return self._target
 
-    @target_storage.setter
-    def target_storage(self, new_target):
+    @target.setter
+    def target(self, new_target):
         if not isinstance(new_target, str):
             raise TypeError(f"Provided path {new_target} must be a str")
         if not os.path.exists(new_target):
             raise ValueError(f"Provided path {new_target} does not exist")
-        self._target_storage = new_target
+        self._target = new_target

@@ -40,10 +40,11 @@ class PyxSyncUI(ctk.CTk):
     def run_process(self):
         self.transfer_files_btn.configure(state=DISABLED)
         try:
-            storage_manager = StorageManager()
-            storage_manager.source_storage = self.select_source_frame.path_entry.get()
-            storage_manager.target_storage = self.select_target_frame.path_entry.get()
-            process_files(storage_manager.source_storage, storage_manager.target_storage)
+            storage = StorageManager(
+                self.select_source_frame.path_entry.get(),
+                self.select_target_frame.path_entry.get(),
+            )
+            process_files(storage)
         except Exception as e:
             logger.error(f"Couldn't complete file transfer with error: {e}")
         self.transfer_files_btn.configure(state=NORMAL)
