@@ -1,5 +1,5 @@
 import math
-from tkinter import END, filedialog
+from tkinter import DISABLED, END, NORMAL, filedialog
 
 import customtkinter as ctk
 
@@ -34,12 +34,12 @@ class PyxSyncUI(ctk.CTk):
         self.logs_display.grid(row=4, column=0, padx=(10, 10), pady=(10, 10))
 
     def run_process(self):
-        self.transfer_files_btn.configure(state="disabled")
+        self.transfer_files_btn.configure(state=DISABLED)
         storage_manager = StorageManager()
         storage_manager.source_storage = self.select_source_frame.path_entry.get()
         storage_manager.target_storage = self.select_target_frame.path_entry.get()
         process_files(storage_manager.source_storage, storage_manager.target_storage)
-        self.transfer_files_btn.configure(state="normal")
+        self.transfer_files_btn.configure(state=NORMAL)
 
 
 class TitleLabel(ctk.CTkLabel):
@@ -49,9 +49,9 @@ class TitleLabel(ctk.CTkLabel):
 
 
 class DirSelectionFrame(ctk.CTkFrame):
-    def __init__(self, master, type, width):
+    def __init__(self, master, selector_type, width):
         super().__init__(master)
-        self.title = f"{type} selector"
+        self.title = f"{selector_type} selector"
         self.grid_columnconfigure(1, weight=1)
 
         self.browse_button = ctk.CTkButton(
@@ -60,7 +60,7 @@ class DirSelectionFrame(ctk.CTkFrame):
         self.browse_button.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
         self.path_entry = ctk.CTkEntry(
-            self, placeholder_text=f"Filepath to image/video file {type} ...", width=math.floor(0.7 * width)
+            self, placeholder_text=f"Select a path to file {selector_type} ...", width=math.floor(0.7 * width)
         )
         self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5))
 
