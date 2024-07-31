@@ -22,25 +22,25 @@ class PyxSyncUI(ctk.CTk):
         width, height = (500, 440)
         self.geometry(f"{width}x{height}")
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((4, 5), weight=1)
+        self.grid_rowconfigure(5, weight=1)
 
         self.title_textbox = TitleLabel(self, "Welcome to PyxSync", 24)
         self.title_textbox.grid(row=0, column=0, padx=(10, 10), pady=(10, 10))
 
         self.select_source_frame = DirSelectionFrame(self, "source", width)
-        self.select_source_frame.grid(row=1, column=0, padx=(10, 10))
+        self.select_source_frame.grid(row=1, column=0, padx=(10, 10), sticky="NSEW")
 
         self.select_target_frame = DirSelectionFrame(self, "target", width)
-        self.select_target_frame.grid(row=2, column=0, padx=(10, 10))
+        self.select_target_frame.grid(row=2, column=0, padx=(10, 10), sticky="NSEW")
 
         self.transfer_files_btn = ctk.CTkButton(self, text="Start file transfer", command=self.start_process)
         self.transfer_files_btn.grid(row=3, column=0, padx=(10, 10), pady=(10, 10))
 
         self.progress_bar = ProgressBar(self, width)
-        self.progress_bar.grid(row=4, column=0, padx=(10, 10), pady=(10, 10))
+        self.progress_bar.grid(row=4, column=0, padx=(10, 10), pady=(10, 10), sticky="EW")
 
         self.logs_display = DisplayLogsFrame(self, width)
-        self.logs_display.grid(row=5, column=0, padx=(10, 10), pady=(10, 10))
+        self.logs_display.grid(row=5, column=0, padx=(10, 10), pady=(10, 10), sticky="NSEW")
 
     def start_process(self):
         self.transfer_files_btn.configure(state=ctk.DISABLED)
@@ -89,7 +89,7 @@ class DirSelectionFrame(ctk.CTkFrame):
         self.path_entry = ctk.CTkEntry(
             self, placeholder_text=f"Select a path to file {selector_type} ...", width=math.floor(0.8 * width)
         )
-        self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5))
+        self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5), sticky="EW")
 
     def choose_directory(self):
         selected_dir = filedialog.askdirectory()
@@ -102,8 +102,9 @@ class DisplayLogsFrame(ctk.CTkFrame):
         super().__init__(master)
         self.title = "logs display"
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        self.logs_box = ctk.CTkTextbox(self, width=width, height=200, activate_scrollbars=False)
+        self.logs_box = ctk.CTkTextbox(self, activate_scrollbars=False)
         self.logs_box.grid(row=0, column=0, sticky="nsew")
         self.logs_box.configure(state="disabled")
 
