@@ -40,7 +40,7 @@ pytest==8.1.2
     # via -r .\requirements.in
 pywin32-ctypes==0.2.2
     # via pyinstaller
-tqdm==4.66.2
+tqdm==4.66.5
     # via -r .\requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
