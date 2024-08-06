@@ -23,7 +23,7 @@ class PyxSyncUI(ctk.CTk):
         self.geometry(f"{width}x{height}")
         self.minsize(width, height)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(5, weight=1)
+        self.grid_rowconfigure(4, weight=1)
 
         self.title_textbox = TitleLabel(self, "Welcome to PyxSync", 24)
         self.title_textbox.grid(row=0, column=0, padx=(10, 10), pady=(10, 10))
@@ -34,14 +34,20 @@ class PyxSyncUI(ctk.CTk):
         self.select_target_frame = DirSelectionFrame(self, "target", width)
         self.select_target_frame.grid(row=2, column=0, padx=(10, 10), sticky="NSEW")
 
-        self.transfer_files_btn = ctk.CTkButton(self, text="Start file transfer", command=self.start_process)
-        self.transfer_files_btn.grid(row=3, column=0, padx=(10, 10), pady=(10, 10))
+        self.start_progress_frame = ctk.CTkFrame(self)
+        self.start_progress_frame.grid(row=3, column=0, padx=(10, 10), pady=(10, 10), sticky="NSEW")
+        self.start_progress_frame.grid_columnconfigure(1, weight=10)
 
-        self.progress_bar = ProgressBar(self, width)
-        self.progress_bar.grid(row=4, column=0, padx=(10, 10), pady=(10, 10), sticky="EW")
+        self.transfer_files_btn = ctk.CTkButton(
+            self.start_progress_frame, text="Start file transfer", command=self.start_process
+        )
+        self.transfer_files_btn.grid(row=0, column=0, padx=(10, 10), pady=(10, 10), sticky="EW")
+
+        self.progress_bar = ProgressBar(self.start_progress_frame, width)
+        self.progress_bar.grid(row=0, column=1, padx=(10, 10), pady=(10, 10), sticky="EW")
 
         self.logs_display = DisplayLogsFrame(self, width)
-        self.logs_display.grid(row=5, column=0, padx=(10, 10), pady=(10, 10), sticky="NSEW")
+        self.logs_display.grid(row=4, column=0, padx=(10, 10), pady=(10, 10), sticky="NSEW")
 
     def start_process(self):
         self.transfer_files_btn.configure(state=ctk.DISABLED)
