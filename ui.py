@@ -21,6 +21,7 @@ class PyxSyncUI(ctk.CTk):
         self.title("PyxSync")
         width, height = (500, 440)
         self.geometry(f"{width}x{height}")
+        self.minsize(width, height)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(5, weight=1)
 
