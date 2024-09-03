@@ -8,10 +8,10 @@ import customtkinter as ctk
 import exifread
 from tqdm import tqdm
 
-from file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
-from logger import logger
-from progress import ProgressTracker
-from storage_manager import StorageManager
+from app.file_extensions import ImageExtensions, RAWImageExtensions, VideoExtensions
+from app.logger import logger
+from app.progress import ProgressTracker
+from app.storage_manager import StorageManager
 
 
 class FileHandlingModes(Enum):

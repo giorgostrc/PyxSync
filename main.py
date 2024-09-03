@@ -1,4 +1,4 @@
-from ui import PyxSyncUI
+from app.ui import PyxSyncUI
 
 
 def main():

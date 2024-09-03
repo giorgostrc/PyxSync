@@ -1,13 +1,17 @@
+import os
+
 import pytest
 
-from main import get_camera_model
+from app.processing import get_camera_model
+
+basedir = os.path.dirname(__file__)
 
 
 @pytest.mark.parametrize(
     "filepath, exp_result",
     [
-        ("./images/test_img_01.NEF", "NIKON D200"),
-        ("./images/test_img_02.ARW", "SONY NEX-5"),
+        (os.path.join(basedir, "images/test_img_01.NEF"), "NIKON D200"),
+        (os.path.join(basedir, "images/test_img_02.ARW"), "SONY NEX-5"),
     ],
 )
 def test_get_camera_model(filepath, exp_result):

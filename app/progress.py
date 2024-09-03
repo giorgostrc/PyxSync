@@ -1,12 +1,11 @@
 from typing import Optional
 
-import customtkinter as ctk
-
-from logger import logger
+from app.logger import logger
+from app.ui_components import ProgressBar
 
 
 class ProgressTracker:
-    def __init__(self, progress_bar: Optional[ctk.CTkProgressBar] = None):
+    def __init__(self, progress_bar: Optional[ProgressBar] = None):
         self._total_steps = 0
         self._completed_steps = 0
         self._progress_bar = progress_bar
@@ -30,7 +29,7 @@ class ProgressTracker:
             return
 
         progress = self._completed_steps / self._total_steps
-        self._progress_bar.set(progress)
+        self._progress_bar["value"] = progress
 
     @property
     def progress_bar(self):
