@@ -29,15 +29,31 @@ class ButtonWithIcon(tk.Button):
         super().__init__(master, width=width, command=command, text=text, image=self.icon, compound="left")
 
 
+class AddRemoveEntryFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.add_path_button = tk.Button(self, text="Add source")
+        self.add_path_button.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
+        self.remove_path_button = tk.Button(self, text="Remove source")
+        self.remove_path_button.grid(row=0, column=1, padx=(5, 5), pady=(5, 5))
+
+
 class DirSelectionFrame(tk.Frame):
     def __init__(self, master, selector_type, width):
         super().__init__(master)
-        self.title = f"{selector_type} selector"
         self.grid_columnconfigure(1, weight=1)
+
+        self.selector_type = selector_type
+        self.title = f"{self.selector_type} selector"
+        self.width = width
+
+        self.path_entry = tk.Entry(self, width=math.floor(0.8 * self.width))
+        self.path_entry.insert(0, f"Select a path to file {self.selector_type} ...")
+        self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5), sticky="EW")
 
         self.browse_button = ButtonWithIcon(
             self,
-            math.floor(0.1 * width),
+            math.floor(0.1 * self.width),
             self.choose_directory,
             "",
             "icons/add_folder_icon_black.png",
@@ -45,14 +61,52 @@ class DirSelectionFrame(tk.Frame):
         )
         self.browse_button.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
-        self.path_entry = tk.Entry(self, width=math.floor(0.8 * width))
-        self.path_entry.insert(0, f"Select a path to file {selector_type} ...")
-        self.path_entry.grid(row=0, column=1, padx=(5, 5), pady=(5, 5), sticky="EW")
-
     def choose_directory(self):
         selected_dir = filedialog.askdirectory()
         self.path_entry.delete(0, tk.END)
         self.path_entry.insert(0, selected_dir)
+
+
+class DirSelector(tk.Frame):
+    def __init__(self, master, selector_type, width):
+        super().__init__(master)
+        self.selector_type = selector_type
+        self.width = width
+        self.entries = []
+        self.create_path_entry(selector_type, width)
+
+    def create_path_entry(self, selector_type, width, row=0):
+        frame = DirSelectionFrame(self, selector_type, width)
+        frame.grid(row=row, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        self.entries.append(frame)
+
+    @property
+    def text_entries(self):
+        return [entry.path_entry.get() for entry in self.entries]
+
+
+class MultiDirSelector(DirSelector):
+    def __init__(self, master, selector_type, width):
+        super().__init__(master, selector_type, width)
+        self.add_remove_entry_frame = AddRemoveEntryFrame(self)
+        self.add_remove_entry_frame.add_path_button.config(command=self.add_path_entry)
+        self.add_remove_entry_frame.remove_path_button.config(command=self.remove_path_entry)
+        self.add_remove_entry_frame.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+
+    def add_path_entry(self):
+        num_existing = len(self.entries)
+        self.add_remove_entry_frame.grid(row=1 + num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        self.create_path_entry(self.selector_type, self.width, num_existing)
+
+    def remove_path_entry(self):
+        num_existing = len(self.entries)
+        if num_existing < 2:
+            raise ValueError("Insufficient number of entries. Could not remove!")
+
+        last_path_entry = self.entries.pop()
+        self.add_remove_entry_frame.grid(row=num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        if last_path_entry:
+            last_path_entry.destroy()
 
 
 class DisplayLogsFrame(tk.Frame):
