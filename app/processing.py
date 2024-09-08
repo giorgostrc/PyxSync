@@ -2,7 +2,7 @@ import os
 import shutil
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List
 
 import customtkinter as ctk
 import exifread
@@ -21,7 +21,7 @@ class FileHandlingModes(Enum):
     VID = "VID"
 
 
-def find_files(selected_device: str, mode: FileHandlingModes) -> Optional[List[str]]:
+def find_files(selected_device: str, mode: FileHandlingModes) -> List[str]:
     mode_target_files = {
         FileHandlingModes.RAW: RAWImageExtensions.to_list(),
         FileHandlingModes.JPG: ImageExtensions.to_list(),
@@ -79,7 +79,6 @@ def get_photo_date_range(filepaths: List[str]) -> str:
 
 def copy_files(filepaths: List[str], target_dir: str, prog_tracker: ProgressTracker) -> None:
     os.makedirs(target_dir, exist_ok=False)
-    prog_tracker.add_total_steps(len(filepaths))
     for i, filepath in tqdm(enumerate(filepaths), desc="Copying over files ... ", total=len(filepaths)):
         prog_tracker.report_progress(1)
         if os.path.isfile(filepath):
@@ -91,10 +90,20 @@ def copy_files(filepaths: List[str], target_dir: str, prog_tracker: ProgressTrac
 
 
 def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> None:
-    raw_files = find_files(storage.source, FileHandlingModes.RAW)
+    raw_files = []
+    jpg_files = []
+    vid_files = []
+    for source in storage.sources:
+        logger.info(f"Scanning source dir: {source}")
+        raw_files.extend(find_files(source, FileHandlingModes.RAW))
+        jpg_files.extend(find_files(source, FileHandlingModes.JPG))
+        vid_files.extend(find_files(source, FileHandlingModes.VID))
+
     if not raw_files:
-        logger.error(f"No RAW files were found in: {storage.source}")
+        logger.error(f"No RAW files were found in: {storage.sources}")
         return
+
+    prog_tracker.add_total_steps(len(raw_files) + len(jpg_files) + len(vid_files))
 
     camera_model = get_camera_model(raw_files[0])
     date_range = get_photo_date_range(raw_files)
@@ -102,12 +111,10 @@ def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> Non
     logger.info(f"Destination path: {target_dir}")
     copy_files(raw_files, target_dir, prog_tracker)
 
-    jpg_files = find_files(storage.source, FileHandlingModes.JPG)
     if jpg_files:
         jpg_target_dir = os.path.join(target_dir, "JPG/")
         copy_files(jpg_files, jpg_target_dir, prog_tracker)
 
-    vid_files = find_files(storage.source, FileHandlingModes.VID)
     if vid_files:
         vid_target_dir = os.path.join(target_dir, "MOV/")
         copy_files(vid_files, vid_target_dir, prog_tracker)
