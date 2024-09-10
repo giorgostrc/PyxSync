@@ -5,7 +5,7 @@ from functools import partial
 from tkinter import filedialog
 from tkinter.font import Font
 from tkinter.ttk import Progressbar
-from typing import List, Union
+from typing import Set, Union
 
 from PIL import Image, ImageTk
 
@@ -104,11 +104,11 @@ class DirSelector(tk.Frame):
         self.entries.append(frame)
 
     @property
-    def text_entries(self) -> Union[str, List[str]]:
+    def text_entries(self) -> Union[str, Set[str]]:
         if self.selector_type == "target":
             return self.entries[0].path_entry.get()
 
-        return [entry.path_entry.get() for entry in self.entries]
+        return set([entry.path_entry.get() for entry in self.entries])
 
     def remove_entry(self, entry_frame):
         raise NotImplementedError("Can't remove entry in single path selector.")

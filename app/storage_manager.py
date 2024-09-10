@@ -1,9 +1,9 @@
 import os.path
-from typing import List
+from typing import Set
 
 
 class StorageManager:
-    def __init__(self, sources: List[str], target: str):
+    def __init__(self, sources: Set[str], target: str):
         if any(not isinstance(path, str) for path in sources):
             raise TypeError(f"Provided paths {sources} must be a str")
         if any(not os.path.exists(path) for path in sources):
