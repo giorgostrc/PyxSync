@@ -168,6 +168,13 @@ class ProgressBar(Progressbar):
 
     def reset_bar(self):
         self["value"] = 0
+        self["maximum"] = 1
 
-    def set_success(self):
+    def complete_bar(self):
         self["value"] = 100
+
+    def set_total_steps(self, total_steps):
+        self["maximum"] = total_steps
+
+    def set_completed_steps(self, completed_steps):
+        self["value"] = completed_steps

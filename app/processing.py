@@ -119,8 +119,6 @@ def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> Non
         vid_target_dir = os.path.join(target_dir, "MOV/")
         copy_files(vid_files, vid_target_dir, prog_tracker)
 
-    prog_tracker.progress_bar.set_success()
-
 
 def run_process(storage: StorageManager, prog_tracker: ProgressTracker, start_process_btn: ctk.CTkButton) -> None:
     try:
