@@ -12,15 +12,19 @@ class ProgressTracker:
 
     def set_total_steps(self, steps: int) -> None:
         self._total_steps = steps
+        if self._progress_bar:
+            self._progress_bar.set_total_steps(self._total_steps)
 
     def add_total_steps(self, steps: int) -> None:
         self._total_steps += steps
+        if self._progress_bar:
+            self._progress_bar.set_total_steps(self._total_steps)
 
     def report_progress(self, steps: int) -> None:
         self._completed_steps += steps
-        self.update_progress()
+        self.update_progress_bar()
 
-    def update_progress(self) -> None:
+    def update_progress_bar(self) -> None:
         if not self._progress_bar:
             return
 
@@ -28,8 +32,7 @@ class ProgressTracker:
             logger.warning("Unable to update progress bar")
             return
 
-        progress = self._completed_steps / self._total_steps
-        self._progress_bar["value"] = progress
+        self._progress_bar.set_completed_steps(self._completed_steps)
 
     @property
     def progress_bar(self):

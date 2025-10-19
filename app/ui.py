@@ -5,7 +5,7 @@ from app.logger import logger
 from app.processing import run_process
 from app.progress import ProgressTracker
 from app.storage_manager import StorageManager
-from app.ui_components import DirSelectionFrame, DisplayLogsFrame, ProgressBar, TitleLabel
+from app.ui_components import DirSelector, DisplayLogsFrame, MultiDirSelector, ProgressBar, TitleLabel
 
 
 class PyxSyncUI(tk.Tk):
@@ -22,10 +22,10 @@ class PyxSyncUI(tk.Tk):
         self.title_textbox = TitleLabel(self, "Welcome to PyxSync", 24)
         self.title_textbox.grid(row=0, column=0, padx=(10, 10), pady=(10, 10))
 
-        self.select_source_frame = DirSelectionFrame(self, "source", width)
+        self.select_source_frame = MultiDirSelector(self, "source", width)
         self.select_source_frame.grid(row=1, column=0, padx=(10, 10), sticky="NSEW")
 
-        self.select_target_frame = DirSelectionFrame(self, "target", width)
+        self.select_target_frame = DirSelector(self, "target", width)
         self.select_target_frame.grid(row=2, column=0, padx=(10, 10), sticky="NSEW")
 
         self.start_progress_frame = tk.Frame(self)
@@ -48,8 +48,8 @@ class PyxSyncUI(tk.Tk):
         self.progress_bar.reset_bar()
         try:
             storage = StorageManager(
-                self.select_source_frame.path_entry.get(),
-                self.select_target_frame.path_entry.get(),
+                self.select_source_frame.text_entries,
+                self.select_target_frame.text_entries,
             )
             prog_tracker = ProgressTracker(self.progress_bar)
             thread = threading.Thread(target=run_process, args=(storage, prog_tracker, self.transfer_files_btn))
