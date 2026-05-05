@@ -8,15 +8,10 @@ altgraph==0.17.4
     # via pyinstaller
 colorama==0.4.6
     # via tqdm
-customtkinter==5.2.2
-    # via -r requirements.in
-darkdetect==0.8.0
-    # via customtkinter
 exifread==3.0.0
     # via -r requirements.in
 packaging==24.0
     # via
-    #   customtkinter
     #   pyinstaller
     #   pyinstaller-hooks-contrib
 pefile==2023.2.7

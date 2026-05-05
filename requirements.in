@@ -1,6 +1,5 @@
 psutil
 exifread
 tqdm>4.66.2
-customtkinter
 pillow
 pyinstaller
