@@ -1,10 +1,10 @@
 import os
 import shutil
+import tkinter as tk
 from datetime import datetime
 from enum import Enum
 from typing import List
 
-import customtkinter as ctk
 import exifread
 from tqdm import tqdm
 
@@ -127,11 +127,11 @@ def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> Non
 def run_process(
     storage: StorageManager,
     prog_tracker: ProgressTracker,
-    start_process_btn: ctk.CTkButton,
+    start_process_btn: tk.Button,
 ) -> None:
     try:
         process_files(storage, prog_tracker)
     except Exception as e:
         logger.error(f"Couldn't complete file transfer with error: {e}")
     finally:
-        start_process_btn.configure(state=ctk.NORMAL)
+        start_process_btn.config(state=tk.NORMAL, text="Start file transfer")

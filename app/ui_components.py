@@ -1,4 +1,3 @@
-import math
 import os
 import tkinter as tk
 from functools import partial
@@ -17,7 +16,7 @@ root_path = os.path.abspath(os.path.join(basedir, os.pardir))
 
 class TitleLabel(tk.Label):
     def __init__(self, master, text, font_size):
-        font = Font(size=font_size)
+        font = Font(family="Segoe UI", size=font_size, weight="bold")
         super().__init__(master, text=text, font=font)
         self.anchor = "center"
 
@@ -35,6 +34,10 @@ class ButtonWithIcon(tk.Button):
             text=text,
             image=self.icon,
             compound="left",
+            relief="flat",
+            bg="#F7F7F8",
+            activebackground="#E5E7EB",
+            bd=0,
         )
 
 
@@ -53,13 +56,12 @@ class AddRemoveEntryFrame(tk.Frame):
 
 
 class DirSelectionFrame(tk.Frame):
-    def __init__(self, master, selector_type, width):
-        super().__init__(master)
+    def __init__(self, master, selector_type):
+        super().__init__(master, highlightthickness=1, highlightbackground="#D1D5DB")
         self.grid_columnconfigure(1, weight=1)
 
         self.selector_type = selector_type
         self.title = f"{self.selector_type} selector"
-        self.width = width
 
         self.path_entry = tk.Entry(self)
         self.path_entry.insert(0, f"Select a path to file {self.selector_type} ...")
@@ -95,17 +97,16 @@ class DirSelectionFrame(tk.Frame):
 
 
 class DirSelector(tk.Frame):
-    def __init__(self, master, selector_type, width):
+    def __init__(self, master, selector_type):
         super().__init__(master)
         self.columnconfigure(0, weight=1)
 
         self.selector_type = selector_type
-        self.width = width
         self.entries = []
-        self.create_path_entry(selector_type, width)
+        self.create_path_entry(selector_type)
 
-    def create_path_entry(self, selector_type, width, row=0):
-        frame = DirSelectionFrame(self, selector_type, width)
+    def create_path_entry(self, selector_type, row=0):
+        frame = DirSelectionFrame(self, selector_type)
         if selector_type == "source":
             frame.remove_button.configure(command=partial(self.remove_entry, frame))
 
@@ -124,8 +125,8 @@ class DirSelector(tk.Frame):
 
 
 class MultiDirSelector(DirSelector):
-    def __init__(self, master, selector_type, width):
-        super().__init__(master, selector_type, width)
+    def __init__(self, master, selector_type):
+        super().__init__(master, selector_type)
         self.add_remove_entry_frame = AddRemoveEntryFrame(self)
         self.add_remove_entry_frame.add_path_button.config(command=self.add_path_entry)
         self.add_remove_entry_frame.grid(
@@ -138,7 +139,7 @@ class MultiDirSelector(DirSelector):
         self.add_remove_entry_frame.grid(
             row=1 + num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW"
         )
-        self.create_path_entry(self.selector_type, self.width, num_existing)
+        self.create_path_entry(self.selector_type, num_existing)
 
     def remove_entry(self, entry_frame):
         if len(self.entries) < 2:
@@ -159,13 +160,26 @@ class MultiDirSelector(DirSelector):
 
 
 class DisplayLogsFrame(tk.Frame):
-    def __init__(self, master, width):
+    def __init__(self, master):
         super().__init__(master)
         self.title = "logs display"
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.logs_box = tk.Text(self, state=tk.DISABLED, wrap="word")
+        self.logs_box = tk.Text(
+            self,
+            state=tk.DISABLED,
+            wrap="word",
+            bg="#FFFFFF",
+            fg="#1A1A1A",
+            font=("Segoe UI", 9),
+            relief="flat",
+            borderwidth=0,
+        )
+        self.logs_box.tag_config("ERROR", foreground="#DC2626")
+        self.logs_box.tag_config("WARNING", foreground="#D97706")
+        self.logs_box.tag_config("DEBUG", foreground="#9CA3AF")
+        # INFO intentionally omitted — falls through to the widget's default fg
         self.logs_box.grid(row=0, column=0, sticky="nsew")
 
         scrollbar = tk.Scrollbar(self, command=self.logs_box.yview)
@@ -177,8 +191,8 @@ class DisplayLogsFrame(tk.Frame):
 
 
 class ProgressBar(Progressbar):
-    def __init__(self, master, width):
-        super().__init__(master, length=math.floor(0.8 * width), mode="determinate")
+    def __init__(self, master):
+        super().__init__(master, mode="determinate")
         self.reset_bar()
 
     def reset_bar(self):

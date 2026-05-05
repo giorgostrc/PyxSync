@@ -16,7 +16,7 @@ class UILogsHandler(logging.Handler):
     def emit(self, record):
         msg = self.format(record)
         self.textbox.configure(state="normal")
-        self.textbox.insert(END, msg + "\n")
+        self.textbox.insert(END, msg + "\n", record.levelname)
         self.textbox.configure(state="disabled")
         self.textbox.yview(END)
 
