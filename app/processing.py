@@ -77,9 +77,13 @@ def get_photo_date_range(filepaths: List[str]) -> str:
     return f"{earliest_date} - {latest_date}"
 
 
-def copy_files(filepaths: List[str], target_dir: str, prog_tracker: ProgressTracker) -> None:
+def copy_files(
+    filepaths: List[str], target_dir: str, prog_tracker: ProgressTracker
+) -> None:
     os.makedirs(target_dir, exist_ok=False)
-    for i, filepath in tqdm(enumerate(filepaths), desc="Copying over files ... ", total=len(filepaths)):
+    for i, filepath in tqdm(
+        enumerate(filepaths), desc="Copying over files ... ", total=len(filepaths)
+    ):
         prog_tracker.report_progress(1)
         if os.path.isfile(filepath):
             filename = os.path.basename(filepath)
@@ -120,7 +124,11 @@ def process_files(storage: StorageManager, prog_tracker: ProgressTracker) -> Non
         copy_files(vid_files, vid_target_dir, prog_tracker)
 
 
-def run_process(storage: StorageManager, prog_tracker: ProgressTracker, start_process_btn: ctk.CTkButton) -> None:
+def run_process(
+    storage: StorageManager,
+    prog_tracker: ProgressTracker,
+    start_process_btn: ctk.CTkButton,
+) -> None:
     try:
         process_files(storage, prog_tracker)
     except Exception as e:

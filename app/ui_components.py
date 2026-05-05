@@ -28,7 +28,14 @@ class ButtonWithIcon(tk.Button):
         image = Image.open(icon_path)
         image = image.resize(icon_size, Image.Resampling.LANCZOS)
         self.icon = ImageTk.PhotoImage(image)
-        super().__init__(master, width=width, command=command, text=text, image=self.icon, compound="left")
+        super().__init__(
+            master,
+            width=width,
+            command=command,
+            text=text,
+            image=self.icon,
+            compound="left",
+        )
 
 
 class AddRemoveEntryFrame(tk.Frame):
@@ -77,7 +84,9 @@ class DirSelectionFrame(tk.Frame):
                 "icons/trash.png",
                 (24, 24),
             )
-            self.remove_button.grid(row=0, column=2, padx=(5, 5), pady=(5, 5), sticky="E")
+            self.remove_button.grid(
+                row=0, column=2, padx=(5, 5), pady=(5, 5), sticky="E"
+            )
 
     def choose_directory(self):
         selected_dir = filedialog.askdirectory()
@@ -119,12 +128,16 @@ class MultiDirSelector(DirSelector):
         super().__init__(master, selector_type, width)
         self.add_remove_entry_frame = AddRemoveEntryFrame(self)
         self.add_remove_entry_frame.add_path_button.config(command=self.add_path_entry)
-        self.add_remove_entry_frame.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        self.add_remove_entry_frame.grid(
+            row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW"
+        )
 
     def add_path_entry(self):
         num_existing = len(self.entries)
         self.add_remove_entry_frame.grid_forget()
-        self.add_remove_entry_frame.grid(row=1 + num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        self.add_remove_entry_frame.grid(
+            row=1 + num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW"
+        )
         self.create_path_entry(self.selector_type, self.width, num_existing)
 
     def remove_entry(self, entry_frame):
@@ -140,7 +153,9 @@ class MultiDirSelector(DirSelector):
             entry.grid(row=i, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
 
         self.add_remove_entry_frame.grid_forget()
-        self.add_remove_entry_frame.grid(row=num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW")
+        self.add_remove_entry_frame.grid(
+            row=num_existing, column=0, padx=(5, 5), pady=(5, 5), sticky="NSEW"
+        )
 
 
 class DisplayLogsFrame(tk.Frame):

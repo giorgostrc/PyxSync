@@ -1,7 +1,9 @@
 import logging
 from tkinter import END
 
-formatter = logging.Formatter("%(asctime)s:%(name)s:%(levelname)s --> %(message)s", "%Y-%m-%d %H:%M")
+formatter = logging.Formatter(
+    "%(asctime)s:%(name)s:%(levelname)s --> %(message)s", "%Y-%m-%d %H:%M"
+)
 
 
 class UILogsHandler(logging.Handler):
